@@ -20,10 +20,10 @@ PROJECT_DIR=$(pwd)
 
 echo "Starting deployment setup for $DOMAIN..."
 
-# 1. Install prerequisites (Nginx, Node, PM2)
+# 1. Install prerequisites (Nginx, Node, PM2, PostgreSQL)
 echo "Installing prerequisites..."
 apt update
-apt install -y curl nginx
+apt install -y curl nginx postgresql postgresql-contrib
 if ! command -v node &> /dev/null; then
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
     apt install -y nodejs
@@ -33,21 +33,41 @@ if ! command -v pm2 &> /dev/null; then
     npm install -g pm2
 fi
 
-# 2. Setup Backend
+# 2. Setup Database
+echo "Setting up PostgreSQL Database..."
+DB_USER="greenpark_user"
+DB_PASS=$(openssl rand -base64 12) # Generate secure random password
+DB_NAME="greenpark_inventory"
+
+# Run postgres commands as the postgres user to create db and user
+sudo -u postgres psql -c "CREATE DATABASE $DB_NAME;" || true
+sudo -u postgres psql -c "CREATE USER $DB_USER WITH ENCRYPTED PASSWORD '$DB_PASS';" || true
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;" || true
+
+# 3. Setup Backend
 echo "Setting up backend..."
 cd $PROJECT_DIR/backend
 npm install
+
+# Setup env vars for backend
+echo "DATABASE_URL=\"postgresql://$DB_USER:$DB_PASS@localhost:5432/$DB_NAME?schema=public\"" > .env
+echo "PORT=$PORT" >> .env
+echo "JWT_SECRET=\"$(openssl rand -hex 32)\"" >> .env
+
+# Generate Prisma Client and Push Schema to Database
 npx prisma generate
+npx prisma db push
+
 npm run build
 
 # Start or Restart PM2 backend process on port 33233
 pm2 stop greenpark-backend || true
 pm2 delete greenpark-backend || true
-PORT=$PORT pm2 start dist/index.js --name "greenpark-backend"
+pm2 start dist/index.js --name "greenpark-backend"
 pm2 save
 pm2 startup | tail -n 1 | bash || true
 
-# 3. Setup Frontend
+# 4. Setup Frontend
 echo "Setting up frontend..."
 cd $PROJECT_DIR
 # Use relative /api path so it routes through Nginx proxy
@@ -55,7 +75,7 @@ echo "REACT_APP_API_URL=/api" > .env.production
 npm install
 npm run build
 
-# 4. Configure Nginx
+# 5. Configure Nginx
 echo "Configuring Nginx..."
 NGINX_CONF="/etc/nginx/sites-available/greenpark"
 
@@ -96,6 +116,7 @@ systemctl restart nginx
 echo "================================================================="
 echo "Deployment Complete!"
 echo "Backend is running on port $PORT via PM2"
+echo "Database '$DB_NAME' created successfully"
 echo "Frontend is built and served via Nginx"
 echo "Site should now be accessible at http://$DOMAIN"
 echo ""
