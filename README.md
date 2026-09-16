@@ -119,9 +119,9 @@ Real-time monitoring generates intelligent alerts for various scenarios includin
 
 ## 👨‍💻 Developer
 
-**Steven Ngoma**
-- Email: stevenngoma@gmail.com
-- Phone: 0776987839
+**Kotwani Varun**
+- Email: kotwaniv03@gmail.com
+- Phone: 9913617254
 
 ## 📄 License
 
