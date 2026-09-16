@@ -36,7 +36,7 @@ fi
 # 2. Setup Database
 echo "Setting up PostgreSQL Database..."
 DB_USER="greenpark_user"
-DB_PASS=$(openssl rand -hex 12) # Generate secure URL-safe random password
+DB_PASS="greenpark1234" # Hardcoded password per user request
 DB_NAME="greenpark_inventory"
 
 # Run postgres commands as the postgres user to create db and user
