@@ -108,6 +108,28 @@ Every inventory transaction is logged with detailed information including moveme
 ### Smart Alert System
 Real-time monitoring generates intelligent alerts for various scenarios including out-of-stock conditions, low inventory warnings, and potential overstock situations.
 
+## 🚀 Server Deployment
+
+A dedicated deployment script (`setup_server.sh`) is provided to automate the entire production setup on an Ubuntu/Debian server.
+
+1. SSH into your VPS/Server.
+2. Clone this repository:
+   ```bash
+   git clone https://github.com/varun0406/greenpark-inventory.git
+   cd greenpark-inventory
+   ```
+3. Make the setup script executable and run it as root:
+   ```bash
+   chmod +x setup_server.sh
+   sudo ./setup_server.sh
+   ```
+
+The script will automatically:
+- Install Node.js, PM2, and Nginx (if not already installed).
+- Build the Node.js backend and start it using PM2 on port `33233`.
+- Build the React frontend for production.
+- Configure Nginx as a reverse proxy for `greenpark.rovark.in` without interfering with other sites on your server.
+
 ## 🔮 Future Enhancements
 
 - Integration with barcode scanning hardware
