@@ -74,7 +74,7 @@ echo "Setting up frontend..."
 cd $PROJECT_DIR
 # Use relative /api path so it routes through Nginx proxy
 echo "REACT_APP_API_URL=/api" > .env.production
-npm install
+npm install --legacy-peer-deps
 npm run build
 
 # 5. Configure Nginx
