@@ -713,7 +713,7 @@ app.get('/api/analytics/supply-chain', authenticate, requireAdmin, async (req, r
     });
 
     let overstockCount = 0;
-    const restockRecommendations = [];
+    const restockRecommendations: any[] = [];
 
     products.forEach(p => {
       const qty = p.stocks.reduce((sum, s) => sum + s.quantity, 0);
