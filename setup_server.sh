@@ -75,6 +75,8 @@ cd $PROJECT_DIR
 # Use relative /api path so it routes through Nginx proxy
 echo "REACT_APP_API_URL=/api" > .env.production
 npm install --legacy-peer-deps
+# Workaround for react-scripts + Node 22 ajv bug
+npm install ajv@^8 ajv-keywords@^5 --legacy-peer-deps
 npm run build
 
 # 5. Configure Nginx
