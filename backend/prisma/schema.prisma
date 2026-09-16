@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String          @id @default(uuid())
+  email        String          @unique
+  passwordHash String
+  role         String          // ADMIN, STAFF
+  name         String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  
+  movements    StockMovement[]
+}
+
+model Godown {
+  id          String        @id @default(uuid())
+  name        String
+  location    String
+  capacity    Int           @default(10000)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  stocks      GodownStock[]
+  movements   StockMovement[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  sku         String   @unique
+  barcode     String   @unique
+  category    String
+  description String
+  price       Float
+  cost        Float
+  minStock    Int
+  maxStock    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  stocks         GodownStock[]
+  stockMovements StockMovement[]
+  alerts         InventoryAlert[]
+}
+
+model GodownStock {
+  id        String   @id @default(uuid())
+  godownId  String
+  productId String
+  quantity  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  godown    Godown   @relation(fields: [godownId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([godownId, productId])
+}
+
+model StockMovement {
+  id        String   @id @default(uuid())
+  productId String
+  godownId  String
+  userId    String
+  type      String   // IN, OUT, TRANSFER, ADJUSTMENT
+  quantity  Int
+  reason    String
+  reference String
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id])
+  godown    Godown   @relation(fields: [godownId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model InventoryAlert {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  type      String   // LOW_STOCK, OUT_OF_STOCK, OVERSTOCK
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #fbfbfd; /* awwwards-light */
+  color: #111827;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Custom Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Base text selection */
+::selection {
+  background: rgba(99, 102, 241, 0.2); /* Indigo */
+  color: #111827;
+}
+
+/* Scanner Overrides */
+body.scanner-active, body.scanner-active #root, body.scanner-active .bg-gray-50, body.scanner-active .bg-white, body.scanner-active nav {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+body.scanner-active .shadow-lg, body.scanner-active .bg-gray-900, body.scanner-active .awwwards-card {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  backdrop-filter: none !important;
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-awwwards-card backdrop-blur-2xl border border-awwwards-border shadow-[0_8px_30px_rgb(0,0,0,0.04)];
+  }
+  .glass-panel-hover {
+    @apply hover:bg-white/90 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300;
+  }
+  
+  /* Text clipping for gradients */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r;
+  }
+}
